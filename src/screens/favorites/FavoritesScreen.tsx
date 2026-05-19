@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,24 +15,26 @@ import { useFavoritesStore } from '../../store/favoritesStore';
 import { useAudioPlayback, useNavigationTracking } from '../../hooks';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import { MOCK_TRACKS } from '../../api/mockData';
+import { Track } from '../../types';
 
 type Props = StackScreenProps<RootStackParamList>;
 
 /**
  * FavoritesScreen - Display all favorited tracks
  */
-const FavoritesScreen: React.FC<Props> = ({ navigation }) => {
+const FavoritesScreen: React.FC<Props> = () => {
   useNavigationTracking('Favorites');
 
   const playerStore = usePlayerStore();
   const favoritesStore = useFavoritesStore();
+  const loadFavorites = useFavoritesStore((state) => state.loadFavorites);
   const { playTrack } = useAudioPlayback();
 
   // Load favorites on mount and focus
   useFocusEffect(
     useCallback(() => {
-      favoritesStore.loadFavorites();
-    }, [favoritesStore])
+      loadFavorites();
+    }, [loadFavorites])
   );
 
   const favoriteTracks = MOCK_TRACKS.filter((track) =>
@@ -40,7 +42,7 @@ const FavoritesScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   const handlePlayTrack = useCallback(
-    (track) => {
+    (track: Track) => {
       playerStore.setQueue(favoriteTracks);
       playTrack(track);
     },

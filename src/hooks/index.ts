@@ -8,8 +8,13 @@ import { Track } from '../types';
  * Integrates with player store and handles track player lifecycle
  */
 export const useAudioPlayback = () => {
-  const playerStore = usePlayerStore();
-  const authStore = useAuthStore();
+  const isPlaying = usePlayerStore((state) => state.isPlaying);
+  const duration = usePlayerStore((state) => state.duration);
+  const currentTrackId = usePlayerStore((state) => state.currentTrackId);
+  const setCurrentTrack = usePlayerStore((state) => state.setCurrentTrack);
+  const play = usePlayerStore((state) => state.play);
+  const pause = usePlayerStore((state) => state.pause);
+  const updateLastPlayingTrack = useAuthStore((state) => state.updateLastPlayingTrack);
   const [isReady, setIsReady] = useState(false);
   const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -26,17 +31,19 @@ export const useAudioPlayback = () => {
 
   // Simulate progress updates
   useEffect(() => {
-    if (playerStore.isPlaying && playerStore.duration > 0) {
+    if (isPlaying && duration > 0) {
       playbackIntervalRef.current = setInterval(() => {
-        playerStore.setProgress((prev) => {
-          const newProgress = prev + 0.1;
-          if (newProgress >= playerStore.duration) {
-            // Auto-play next track
-            playerStore.playNext();
-            return 0;
-          }
-          return newProgress;
-        });
+        const state = usePlayerStore.getState();
+        const newProgress = state.progress + 0.1;
+
+        if (newProgress >= state.duration) {
+          // Auto-play next track
+          state.playNext();
+          state.setProgress(0);
+          return;
+        }
+
+        state.setProgress(newProgress);
       }, 100);
     } else {
       if (playbackIntervalRef.current) {
@@ -50,39 +57,39 @@ export const useAudioPlayback = () => {
         clearInterval(playbackIntervalRef.current);
       }
     };
-  }, [playerStore.isPlaying, playerStore.duration]);
+  }, [isPlaying, duration]);
 
   const playTrack = useCallback(
     (track: Track) => {
       // Stop any currently playing track
-      playerStore.setCurrentTrack(track);
+      setCurrentTrack(track);
       // Save to session
-      authStore.updateLastPlayingTrack(track.id, false);
+      updateLastPlayingTrack(track.id, false);
     },
-    [playerStore, authStore]
+    [setCurrentTrack, updateLastPlayingTrack]
   );
 
   const pausePlayback = useCallback(() => {
-    playerStore.pause();
-    if (playerStore.currentTrackId) {
-      authStore.updateLastPlayingTrack(playerStore.currentTrackId, true);
+    pause();
+    if (currentTrackId) {
+      updateLastPlayingTrack(currentTrackId, true);
     }
-  }, [playerStore, authStore]);
+  }, [pause, currentTrackId, updateLastPlayingTrack]);
 
   const resumePlayback = useCallback(() => {
-    playerStore.play();
-    if (playerStore.currentTrackId) {
-      authStore.updateLastPlayingTrack(playerStore.currentTrackId, false);
+    play();
+    if (currentTrackId) {
+      updateLastPlayingTrack(currentTrackId, false);
     }
-  }, [playerStore, authStore]);
+  }, [play, currentTrackId, updateLastPlayingTrack]);
 
   const togglePlayPause = useCallback(() => {
-    if (playerStore.isPlaying) {
+    if (isPlaying) {
       pausePlayback();
     } else {
       resumePlayback();
     }
-  }, [playerStore.isPlaying, pausePlayback, resumePlayback]);
+  }, [isPlaying, pausePlayback, resumePlayback]);
 
   return {
     isReady,
@@ -130,9 +137,9 @@ export const useTrackFetch = (fetchFn: () => Promise<Track[]>) => {
  * Hook for updating last screen navigation
  */
 export const useNavigationTracking = (screenName: string) => {
-  const authStore = useAuthStore();
+  const updateLastScreen = useAuthStore((state) => state.updateLastScreen);
 
   useEffect(() => {
-    authStore.updateLastScreen(screenName);
-  }, [screenName, authStore]);
+    updateLastScreen(screenName);
+  }, [screenName, updateLastScreen]);
 };

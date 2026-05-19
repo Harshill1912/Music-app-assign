@@ -15,7 +15,6 @@ import { usePlayerStore } from '../../store/playerStore';
 import { useFavoritesStore } from '../../store/favoritesStore';
 import { ControlButton, PlayPauseButton, FavoriteButton } from '../../components/index';
 import { formatTime } from '../../utils/formatters';
-import { trackAPI } from '../../api';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import { MOCK_TRACKS } from '../../api/mockData';
 
@@ -75,11 +74,6 @@ const PlayerScreen: React.FC<Props> = ({ navigation }) => {
   }
 
   const isFavorite = favoritesStore.isFavorite(currentTrack.id);
-  const progressPercent =
-    playerStore.duration > 0
-      ? (playerStore.progress / playerStore.duration) * 100
-      : 0;
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>

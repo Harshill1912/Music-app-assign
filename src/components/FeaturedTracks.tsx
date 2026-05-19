@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { Track } from '../../types';
+import { Track } from '../types';
 
 interface FeaturedTracksProps {
   tracks: Track[];

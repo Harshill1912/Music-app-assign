@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import {
   View,
   Text,
@@ -18,21 +18,25 @@ import { useAuthStore } from '../../store/authStore';
 import { useAudioPlayback, useNavigationTracking, useTrackFetch } from '../../hooks';
 import { trackAPI } from '../../api';
 import { RootStackParamList } from '../../navigation/RootNavigator';
+import { Track } from '../../types';
 
 type Props = StackScreenProps<RootStackParamList>;
 
 /**
  * HomeScreen - Main track browsing screen
  */
-const HomeScreen: React.FC<Props> = ({ navigation }) => {
+const HomeScreen: React.FC<Props> = () => {
   useNavigationTracking('Home');
 
-  const { tracks, isLoading, error } = useTrackFetch(() => trackAPI.trackAPI.getAllTracks());
+  const fetchAllTracks = useCallback(() => trackAPI.getAllTracks(), []);
+  const fetchFeaturedTracks = useCallback(() => trackAPI.getFeaturedTracks(), []);
+  const loadFavorites = useFavoritesStore((state) => state.loadFavorites);
+
+  const { tracks, isLoading, error } = useTrackFetch(fetchAllTracks);
   const {
     tracks: featuredTracks,
     isLoading: isLoadingFeatured,
-    error: errorFeatured,
-  } = useTrackFetch(() => trackAPI.trackAPI.getFeaturedTracks());
+  } = useTrackFetch(fetchFeaturedTracks);
 
   const playerStore = usePlayerStore();
   const favoritesStore = useFavoritesStore();
@@ -43,13 +47,13 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   // Load favorites on mount
   useFocusEffect(
     useCallback(() => {
-      favoritesStore.loadFavorites();
-    }, [favoritesStore])
+      loadFavorites();
+    }, [loadFavorites])
   );
 
   // Handle track play
   const handlePlayTrack = useCallback(
-    (track) => {
+    (track: Track) => {
       playerStore.setQueue(tracks);
       playTrack(track);
     },
@@ -69,13 +73,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     // Refresh logic would go here
   }, []);
 
-  // Navigate to player
-  const handleOpenPlayer = useCallback(() => {
-    if (playerStore.currentTrackId) {
-      navigation.navigate('Player', { trackId: playerStore.currentTrackId });
-    }
-  }, [playerStore.currentTrackId, navigation]);
-
   const renderHeader = () => {
     const user = authStore.user;
     return (
@@ -84,55 +81,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           Welcome back, {user?.email.split('@')[0]}! 👋
         </Text>
       </View>
-    );
-  };
-
-  const renderContent = () => {
-    if (isLoading) {
-      return <LoadingIndicator message="Loading tracks..." />;
-    }
-
-    if (error && tracks.length === 0) {
-      return <ErrorMessage message={error} />;
-    }
-
-    if (tracks.length === 0) {
-      return (
-        <EmptyState
-          title="No Tracks Found"
-          message="There are no tracks available at the moment"
-          icon="music"
-        />
-      );
-    }
-
-    return (
-      <FlatList
-        data={tracks}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TrackCard
-            track={item}
-            onPress={() => handlePlayTrack(item)}
-            onFavoritePress={handleFavoriteToggle}
-            isFavorite={favoritesStore.isFavorite(item.id)}
-            isPlaying={playerStore.currentTrackId === item.id}
-          />
-        )}
-        scrollEnabled={false}
-        ListHeaderComponent={
-          <>
-            {renderHeader()}
-            <FeaturedTracks
-              tracks={featuredTracks}
-              onTrackPress={handlePlayTrack}
-              isLoadingFeatured={isLoadingFeatured}
-            />
-            <Text style={styles.allTracksTitle}>All Tracks</Text>
-          </>
-        }
-        contentContainerStyle={styles.listContent}
-      />
     );
   };
 

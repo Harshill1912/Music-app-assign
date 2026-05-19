@@ -8,8 +8,8 @@ import {
   Animated,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Track } from '../../types';
-import { formatTime } from '../../utils/formatters';
+import { Track } from '../types';
+import { formatTime } from '../utils/formatters';
 
 interface TrackCardProps {
   track: Track;
@@ -66,7 +66,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
         {isPlaying && (
           <View style={styles.playingOverlay}>
             <MaterialCommunityIcons
-              name="equalize"
+              name="equalizer"
               size={24}
               color="#fff"
             />

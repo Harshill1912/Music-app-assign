@@ -28,6 +28,8 @@ export type MainTabParamList = {
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
+const HomeStackNavigator = createStackNavigator<any>();
+const FavoritesStackNavigator = createStackNavigator<any>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 /**
@@ -35,27 +37,27 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
  */
 const HomeStack = () => {
   return (
-    <Stack.Navigator
+    <HomeStackNavigator.Navigator
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Stack.Screen
+      <HomeStackNavigator.Screen
         name="HomeTab"
-        component={HomeScreen}
+        component={HomeScreen as React.ComponentType<any>}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
+      <HomeStackNavigator.Screen
         name="Player"
-        component={PlayerScreen}
+        component={PlayerScreen as React.ComponentType<any>}
         options={{
           headerShown: false,
           cardStyle: { backgroundColor: '#f8f9fa' },
         }}
       />
-      <Stack.Screen
+      <HomeStackNavigator.Screen
         name="Artist"
-        component={ArtistScreen}
+        component={ArtistScreen as React.ComponentType<any>}
         options={{
           headerTitle: 'Artist',
           headerBackTitle: '',
@@ -67,7 +69,7 @@ const HomeStack = () => {
           },
         }}
       />
-    </Stack.Navigator>
+    </HomeStackNavigator.Navigator>
   );
 };
 
@@ -76,27 +78,27 @@ const HomeStack = () => {
  */
 const FavoritesStack = () => {
   return (
-    <Stack.Navigator
+    <FavoritesStackNavigator.Navigator
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Stack.Screen
+      <FavoritesStackNavigator.Screen
         name="FavoritesTab"
-        component={FavoritesScreen}
+        component={FavoritesScreen as React.ComponentType<any>}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
+      <FavoritesStackNavigator.Screen
         name="Player"
-        component={PlayerScreen}
+        component={PlayerScreen as React.ComponentType<any>}
         options={{
           headerShown: false,
           cardStyle: { backgroundColor: '#f8f9fa' },
         }}
       />
-      <Stack.Screen
+      <FavoritesStackNavigator.Screen
         name="Artist"
-        component={ArtistScreen}
+        component={ArtistScreen as React.ComponentType<any>}
         options={{
           headerTitle: 'Artist',
           headerBackTitle: '',
@@ -108,7 +110,7 @@ const FavoritesStack = () => {
           },
         }}
       />
-    </Stack.Navigator>
+    </FavoritesStackNavigator.Navigator>
   );
 };
 
@@ -195,7 +197,7 @@ interface RootNavigatorProps {
 
 export const RootNavigator: React.FC<RootNavigatorProps> = ({
   isLoggedIn,
-  isLoading,
+  isLoading: _isLoading,
 }) => {
   return (
     <NavigationContainer>

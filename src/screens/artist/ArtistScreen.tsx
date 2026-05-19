@@ -6,7 +6,6 @@ import {
   Image,
   FlatList,
   SafeAreaView,
-  ScrollView,
 } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { TrackCard } from '../../components/TrackCard';
@@ -17,7 +16,7 @@ import { useAudioPlayback } from '../../hooks';
 import { formatFollowers } from '../../utils/formatters';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 import { MOCK_ARTISTS, MOCK_TRACKS } from '../../api/mockData';
-import { Artist } from '../../types';
+import { Artist, Track } from '../../types';
 
 type Props = StackScreenProps<RootStackParamList, 'Artist'>;
 
@@ -49,7 +48,7 @@ const ArtistScreen: React.FC<Props> = ({ route }) => {
   }, [artistId]);
 
   const handlePlayTrack = useCallback(
-    (track) => {
+    (track: Track) => {
       if (artist) {
         playerStore.setQueue(artist.tracks);
         playTrack(track);

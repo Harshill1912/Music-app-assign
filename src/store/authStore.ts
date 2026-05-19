@@ -21,7 +21,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   isLoggedIn: false,
   isLoading: true,
 
-  login: async (email: string, password: string) => {
+  login: async (email: string, _password: string) => {
     try {
       // Mock authentication - any email and password work
       const user: User = {

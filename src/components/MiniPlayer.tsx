@@ -1,14 +1,13 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   View,
   StyleSheet,
   Image,
   Text,
   TouchableOpacity,
-  Dimensions,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Track } from '../../types';
+import { Track } from '../types';
 
 interface MiniPlayerProps {
   track: Track | null;

@@ -1,8 +1,24 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
 import { Track, Artist } from '../types';
 import { MOCK_TRACKS, MOCK_ARTISTS, FEATURED_TRACKS } from './mockData';
 
-const API_BASE_URL = 'http://localhost:3001';
+const getApiBaseUrl = () => {
+  const constants = Constants as unknown as {
+    expoConfig?: { hostUri?: string };
+    manifest?: { debuggerHost?: string };
+    manifest2?: { extra?: { expoGo?: { debuggerHost?: string } } };
+  };
+  const hostUri =
+    constants.expoConfig?.hostUri ||
+    constants.manifest?.debuggerHost ||
+    constants.manifest2?.extra?.expoGo?.debuggerHost;
+  const host = hostUri?.split(':')[0];
+
+  return host ? `http://${host}:3001` : 'http://localhost:3001';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 // Create axios instance with timeout
 const apiClient = axios.create({

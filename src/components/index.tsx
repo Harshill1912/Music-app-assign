@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+type MaterialIconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+
 /**
  * LoadingIndicator - shows a loading spinner with optional text
  */
@@ -49,7 +51,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry }) 
 interface EmptyStateProps {
   title: string;
   message: string;
-  icon?: string;
+  icon?: MaterialIconName;
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
@@ -125,7 +127,7 @@ export const PlayPauseButton: React.FC<PlayPauseButtonProps> = ({
  * ControlButton - generic circular control button
  */
 interface ControlButtonProps {
-  icon: string;
+  icon: MaterialIconName;
   onPress: () => void;
   size?: number;
   disabled?: boolean;
